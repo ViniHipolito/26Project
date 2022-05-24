@@ -3,8 +3,6 @@ const World = Matter.World;
 const Bodies = Matter.Bodies;
 const Constraint = Matter.Constraint;
 
-  
-
 var engine, world;
 var canvas;
 var player, playerBase, playerArcher;
@@ -40,9 +38,9 @@ function draw() {
 
   Engine.update(engine);
 
-  playerArcher.display();
   playerBase.display();
   player.display();
+  playerArcher.display();
 
   board1.display();
   board2.display();
@@ -50,6 +48,29 @@ function draw() {
   for (var i = 0; i < playerArrows.length; i++) {
     if (playerArrows[i] !== undefined) {
       playerArrows[i].display();
+
+       var board1Collision = Matter.SAT.collides(
+        board1.body,
+        playerArrows[i].body
+      ); 
+      
+      var board2Collision = Matter.SAT.collides(
+        board2.body,
+        playerArrows[i].body
+      );
+
+      if (board1Collision.collided || board2Collision.collided) {
+        console.log("Collided");
+      }
+
+      var posX = playerArrows[i].body.position.x;
+      var posY = playerArrows[i].body.position.y;
+
+      if (posX > width || posY > height) {
+        if (!playerArrows[i].isRemoved) {
+          playerArrows[i].remove(i);
+        }
+      }
     }
   }
 
@@ -57,12 +78,9 @@ function draw() {
   fill("#FFFF");
   textAlign("center");
   textSize(40);
-  text("Dummy Épico", width / 2, 100);
-  textSize(20);
-  text("Atire com o Botão de Seta Direito", width / 2, 150);
-  text("e Mire com os Botão de Seta para Cima e para Baixo", width / 2, 170);
+  text("DUMMY ÉPICO", width / 2, 100);
 
-  // Contagem de Flechas
+  // Contagem de flechas
   fill("#FFFF");
   textAlign("center");
   textSize(30);
@@ -70,23 +88,23 @@ function draw() {
 }
 
 function keyPressed() {
-  if (keyCode === RIGHT_ARROW) {
-     if (numberOfArrows > 0) {
-       var posX = playerArcher.body.position.x;
-       var posY = playerArcher.body.position.y;
-       var angle = playerArcher.body.angle;
+  if (keyCode === 32) {
+    if (numberOfArrows > 0) {
+      var posX = playerArcher.body.position.x;
+      var posY = playerArcher.body.position.y;
+      var angle = playerArcher.body.angle;
 
-       var arrow = new PlayerArrow(posX, posY, 100, 10, angle);
+      var arrow = new PlayerArrow(posX, posY, 100, 10, angle);
 
-       Matter.Body.setAngle(arrow.body, angle);
-       playerArrows.push(arrow);
-       numberOfArrows -= 1;
-     }
+      Matter.Body.setAngle(arrow.body, angle);
+      playerArrows.push(arrow);
+      numberOfArrows -= 1;
+    }
   }
-} 
+}
 
 function keyReleased() {
-  if (keyCode === RIGHT_ARROW) {
+  if (keyCode === 32) {
     if (playerArrows.length) {
       var angle = playerArcher.body.angle;
       playerArrows[playerArrows.length - 1].shoot(angle);
